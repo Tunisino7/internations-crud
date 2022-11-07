@@ -74,7 +74,7 @@ export const GroupForm = () => {
       } else {
         const res = await GroupService.create(values);
       }
-      // navigate("/");
+      navigate("/");
     } else {
       console.log("Form Validation Error");
     }

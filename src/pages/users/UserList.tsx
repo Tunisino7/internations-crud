@@ -100,7 +100,6 @@ export const UserList = () => {
   const getUsers = async () => {
     let rows: any = await UserService.getAll();
     rows = rows.data
-    console.log(rows);
     setRecords(rows);
   };
 

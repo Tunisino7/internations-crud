@@ -135,7 +135,7 @@ export const UserForm = () => {
         removeFromGroup(userId, gr.toString());
       })
 
-      // navigate("/");
+      navigate("/");
     } else {
       console.log("Form Validation Error");
     }

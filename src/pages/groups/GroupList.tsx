@@ -79,7 +79,6 @@ export const GroupList = () => {
   const getGroups = async () => {
     let rows: any = await GroupService.getAll();
     rows = rows.data
-    console.log(rows);
     setRecords(rows);
   };
 
