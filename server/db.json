@@ -5,40 +5,28 @@
       "firstName": "Mirilla",
       "lastName": "Aluard",
       "email": "maluard0@gizmodo.com",
-      "phone": "3092925838",
-      "groups": [
-        1,
-        3
-      ]
+      "phone": "3092925838"
     },
     {
       "id": 2,
       "firstName": "Leopold",
       "lastName": "Magrane",
       "email": "lmagrane1@theatlantic.com",
-      "phone": "1541372823",
-      "groups": [
-        1
-      ]
+      "phone": "1541372823"
     },
     {
       "id": 3,
       "firstName": "Arne",
       "lastName": "Jachtym",
       "email": "ajachtym2@mac.com",
-      "phone": "1497536403",
-      "groups": [
-        2,
-        3
-      ]
+      "phone": "1497536403"
     },
     {
       "id": 4,
       "firstName": "Brittne",
       "lastName": "Crystal",
       "email": "bcrystal3@nymag.com",
-      "phone": "3593745536",
-      "groups": []
+      "phone": "3593745536"
     }
   ],
   "groups": [
