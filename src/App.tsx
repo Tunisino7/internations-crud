@@ -1,7 +1,9 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { UserForm, UserList } from "./pages/users";
+import { Home } from "./pages/Home";
+import { UserForm } from "./pages/users";
+import { GroupForm } from "./pages/groups";
 import {
   makeStyles,
   CssBaseline,
@@ -54,9 +56,11 @@ function App() {
         <Router>
           <div>
             <Routes>
-              <Route path="/" element={<UserList />} />
+              <Route path="/" element={<Home />} />
               <Route path="/add-user" element={<UserForm />} />
               <Route path="/update-user/:id" element={<UserForm />} />
+              <Route path="/add-group" element={<GroupForm />} />
+              <Route path="/update-group/:id" element={<GroupForm />} />
             </Routes>
           </div>
         </Router>

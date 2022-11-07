@@ -1,32 +1,22 @@
 import React, { useEffect, useState } from "react";
-import {
-  TextBox,
-  Button,
-  Dropdown,
-  CheckBox,
-  RadioGroup,
-} from "../../components";
-import { IUser } from "../../interface";
+import { TextBox, Button } from "../../components";
+import { IUser, IGroup } from "../../interface";
 import { useForm } from "../../hooks";
-import {
-  Container,
-  Grid,
-  createStyles,
-  makeStyles,
-  Theme,
-} from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import UserService from "../../services/userService";
+import GroupService from "../../services/groupService";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 // defining the initial state for the form
 const initialState: IUser = {
+  id: "",
   firstName: "",
   lastName: "",
   email: "",
   phone: "",
-  groups: []
 };
 
 const useStyles = makeStyles({
@@ -41,6 +31,11 @@ export const UserForm = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { id } = useParams();
+  const [groups, setGroups] = useState<any>({ ids: [], labels: [], users: [] });
+  const [groupsUpdate, setGroupsUpdate] = useState<any>({
+    old: [],
+    current: [],
+  });
 
   const validate = (fieldValues = values) => {
     let temp: any = { ...errors };
@@ -127,13 +122,40 @@ export const UserForm = () => {
         UserService.update(values, id);
       } else {
         const res = await UserService.create(values);
-        console.log(res);
       }
+
+      let toAdd = arrDifference(groupsUpdate.current, groupsUpdate.old);
+      let toRemove = arrDifference(groupsUpdate.old, groupsUpdate.current);
+      const userId: any = id;
+
+      toAdd.forEach((gr) => {
+        addToGroup(userId, gr.toString());
+      })
+      toRemove.forEach((gr) => {
+        removeFromGroup(userId, gr.toString());
+      })
+
       // navigate("/");
     } else {
       console.log("Form Validation Error");
     }
   }
+  
+  const addToGroup = async (userId: string, groupId: string) => {
+    let group: IGroup = (await GroupService.get(groupId)).data;
+    if(!group.users.includes(parseInt(userId)))
+      group = {...group, users: [...group.users, parseInt(userId)]};
+    
+    group = (await GroupService.update(group, groupId)).data;
+  };
+
+  const removeFromGroup = async (userId: string, groupId: string) => {
+    let group: IGroup = (await GroupService.get(groupId)).data;
+    if(group.users.includes(parseInt(userId)))
+      group = {...group, users: group.users.filter((el) => el !== parseInt(userId))};
+    
+    group = (await GroupService.update(group, groupId)).data;
+  };
 
   //reset form
   const resetFormDetails = () => {
@@ -144,8 +166,21 @@ export const UserForm = () => {
     navigate("/");
   };
 
+  const arrDifference = (first: number[], second: number[]) => {
+    let b = new Set(second);
+    let difference = [...first].filter((x) => !b.has(x));
+    return difference;
+  };
+
   useEffect(() => {
     (async () => {
+      const groupsData = await GroupService.getAll();
+      setGroups({
+        ids: groupsData.data.map((a) => a.id),
+        labels: groupsData.data.map((a) => a.name),
+        users: groupsData.data.map((a) => a.users),
+      });
+
       if (id != null && id != undefined && parseInt(id) != 0) {
         const user = await UserService.get(id);
         setValues({
@@ -154,6 +189,16 @@ export const UserForm = () => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (id != null && id != undefined && parseInt(id) != 0 && groups.users) {
+      let currentGroups = groups.users.map((arr: any) =>
+        arr.includes(parseInt(id)) ? groups.ids[groups.users.indexOf(arr)] : -1
+      );
+      currentGroups = currentGroups.filter((a: any) => a > -1);
+      setGroupsUpdate({ old: currentGroups, current: currentGroups });
+    }
+  }, [groups]);
 
   return (
     <>
@@ -211,6 +256,30 @@ export const UserForm = () => {
             error={errors.phone}
             className={classes.field}
             fullWidth
+          />
+
+          <Autocomplete
+            multiple
+            id="groups"
+            options={groups.ids}
+            getOptionLabel={(option: any) =>
+              groups.labels[groups.ids.indexOf(option)]
+            }
+            value={groupsUpdate.current}
+            filterSelectedOptions
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="groups"
+                placeholder="User Groups"
+              />
+            )}
+            className={classes.field}
+            fullWidth
+            onChange={(event, newValue) =>
+              setGroupsUpdate({ ...groupsUpdate, current: newValue })
+            }
           />
 
           <Button
